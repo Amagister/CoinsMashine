@@ -18,6 +18,7 @@ public class AppTest
     public AppTest( String testName )
     {
         super( testName );
+        
     }
 
     /**
@@ -33,6 +34,10 @@ public class AppTest
      */
     public void testApp()
     {
+//    	CoinsMashine cm = new CoinsMashine();
+    	
+//    	assertTrue(condition);
+        System.out.println("!");
         assertTrue( true );
     }
 }
