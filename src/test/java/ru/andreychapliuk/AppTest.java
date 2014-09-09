@@ -10,6 +10,8 @@ import junit.framework.TestSuite;
 public class AppTest 
     extends TestCase
 {
+	private double sum = 0.0;
+	CoinsMashine cm = new CoinsMashine();
     /**
      * Create the test case
      *
@@ -34,10 +36,15 @@ public class AppTest
      */
     public void testApp()
     {
-//    	CoinsMashine cm = new CoinsMashine();
+    	
     	
 //    	assertTrue(condition);
         System.out.println("!");
-        assertTrue( true );
+        assertTrue( cm.checkSum(0.0) );
+        testCheck(0);
     }
+    public void testCheck(double d){
+    	assertTrue(cm.checkSum(0.0));
+    }
+    
 }

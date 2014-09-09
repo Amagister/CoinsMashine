@@ -10,17 +10,10 @@ import java.util.Properties;
 import java.util.Scanner;
 
 /**
- * 
+ * @author Andrey
  *
  */
-/**
- * @author Maxim
- *
- */
-/**
- * @author Maxim
- *
- */
+
 public class CoinsMashine {
 
 	private int[] arrMoney = { 2, 3, 7, 15, 24, 38, 84, 29, 33, 22, 74, 91, 32,
@@ -79,7 +72,7 @@ public class CoinsMashine {
 		for (int i = 0; i < arrMoneyOut.length; arrMoneyOut[i++] = 0)
 			;
 	}
-
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < arrMoney.length; i++) {
@@ -91,7 +84,9 @@ public class CoinsMashine {
 		return sb.toString();
 
 	}
-
+	/**
+	 * save properties to file "config.properties"
+	 */
 	private void setProp() {
 		// set the properties value
 		Properties prop = new Properties();
@@ -112,7 +107,9 @@ public class CoinsMashine {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * read properties from file "config.properties"
+	 */
 	private void getProp() {
 		Properties prop = new Properties();
 
@@ -132,8 +129,12 @@ public class CoinsMashine {
 		}
 	}
 
-	// check input sum in mashine
-	private boolean checkSum(double sum) {
+	/**
+	 * check input sum in mashine
+	 * @param sum - entered sum
+	 * @return if sum in mashine > input query sum
+	 */
+	boolean checkSum(double sum) {
 		int totalSum1 = 0;
 		int totalSum2 = 0;
 		for (int i = 0; i < constMoney.length; i++) {
@@ -146,7 +147,10 @@ public class CoinsMashine {
 		}
 		return (int) (sum * 100) < (int) (totalSum1 * 100 + totalSum2);
 	}
-
+	/**
+	 * 
+	 * @param d - 
+	 */
 	public void calculateSum(double d) {
 
 		// get the property value and print it out
