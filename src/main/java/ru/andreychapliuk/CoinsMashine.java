@@ -16,42 +16,71 @@ import java.util.Scanner;
 
 public class CoinsMashine {
 
+	private final int BEGINOFMONETSUAH = 6;
+	private final int BEGINOFMONETS$ = 5;
+	private int beginOfMonets = 0;
+	
+	// an array of the number of coins of each denomination
 	private int[] arrMoney = { 2, 3, 7, 15, 24, 38, 84, 29, 33, 22, 74, 91, 32,
 			40, 8 };
-	private final int[] constMoney = { 500, 200, 100, 50, 20, 10, 5, 2, 1, 50,
+	// array of coin denominations
+	private final int[] constMoneyUAH = { 500, 200, 100, 50, 20, 10, 5, 2, 1, 50,
 			25, 10, 5, 2, 1 };
+	private final int[] constMoneyEUR = { 500, 200, 100, 50, 20, 10, 5, 2, 1, 50,
+			20, 10, 5, 2, 1 };
+	private final int[] constMoney$$$ = { 500, 200, 100, 50, 20, 10, 5, 2, 1, 50,
+			20, 10, 5, 1 };
+	private int[] constMoney;
+	// number of coins for the issuance
 	private int[] arrMoneyOut = new int[15];
-	private String[] arrNameMoney = { "UAH 500", "UAH 200", "UAH 100",
+	//
+	private final String[] arrNameMoneyUAH = { "UAH 500", "UAH 200", "UAH 100",
 			"UAH 50", "UAH 20", "UAH 10", "UAH 5", "UAH 2", "UAH 1",
 			"UAH 0.50", "UAH 0.25", "UAH 0.10", "UAH 0.05", "UAH 0.02",
 			"UAH 0.01" };
-
+	private String[] arrNameMoney;
+	private final String[] arrNameMoneyEUR = { "EUR 500", "EUR 200", "EUR 100",
+			"EUR 50", "EUR 20", "EUR 10", "EUR 5", "EUR 2", "EUR 1",
+			"EUR 0.50", "EUR 0.20", "EUR 0.10", "EUR 0.05", "EUR 0.02",
+			"EUR 0.01" };
+	private final String[] arrNameMoney$$$ = { "$500", "$200", "$100",
+			"$50", "$20", "$10", "$5", "$2", "$1",
+			"$0.50", "$0.25", "$0.10", "$0.05", "$0.01" };
 	public CoinsMashine() {
 		super();
 		// TODO Auto-generated constructor stub
-		setProp();
+		
+		
 	}
 
 	public static void main(String[] args) {
 		double num = 0.0;
-		boolean ext = true;
+		String inputLine;	// selector UAH - EURO
+		boolean ext = true;	// trigger for run/exit
 		CoinsMashine cm = new CoinsMashine();
-
+		cm.setProp();		// initial preferences
 		Scanner scanner = new Scanner(System.in);
 		while (ext) {
 			cm.clear();
-			System.out.println("Type the sum UAH in format: XXX,xx");
-			System.out.println("sample: 123,54");
+			
+			System.out.println("Type the sum UAH or EURO in format: XXX,xx ZZZ");
+			System.out.println("sample: 123,54 UAH  or 123,54 EUR");
 			System.out.println("for quit press any symbol and press Enter");
 			// input sum for calculate
 			try {
 				num = scanner.nextDouble();
+				inputLine = scanner.next();
 			} catch (InputMismatchException ime) {
-				ext = false;
+				ext = false;	// moment exit from program
 				continue;
 			}
-			System.out.println(num);
-
+			System.out.println("input "+num);
+			
+			if(!cm.selectStrategy(inputLine))
+				continue;
+			
+			// get the property value and print it out
+			cm.getProp();
 			if (cm.checkSum(num) == false) {
 				System.out.println("money is tight in mashine");
 				continue;
@@ -63,7 +92,39 @@ public class CoinsMashine {
 		scanner.close();
 		System.out.println("Exited");
 	}
+	/**
+	 * method select UAH or EURO denomination
+	 * @param money TODO
+	 * @return TODO
+	 */
+	public boolean selectStrategy(String money){
+		switch (money) {
+		case "UAH":
+			arrNameMoney = arrNameMoneyUAH;
+			constMoney = constMoneyUAH;
+			beginOfMonets = BEGINOFMONETSUAH;
+			return true;
 
+		case "EUR":
+			arrNameMoney = arrNameMoneyEUR;
+			constMoney = constMoneyEUR;
+			beginOfMonets = BEGINOFMONETSUAH;
+			return true;
+			
+		case "$":
+			arrNameMoney = arrNameMoney$$$;
+			constMoney = constMoney$$$;
+			beginOfMonets = BEGINOFMONETS$;
+			return true;
+
+
+		default:
+			System.out.println("Error' type currency");
+			return false;
+
+		}
+		
+	}
 	/**
 	 * 
 	 */
@@ -85,26 +146,56 @@ public class CoinsMashine {
 
 	}
 	/**
+	 * set initial values for coins denomination
+	 */
+	private void setProp(){
+		Properties prop = new Properties();
+		if(selectStrategy("UAH"))
+			fillProp(prop);
+		if(selectStrategy("EUR"))
+			fillProp(prop);
+		if(selectStrategy("$"))
+			fillProp(prop);
+		flushPropToFile(prop);
+		
+		prop.list(System.out);
+		
+	}
+	/**
 	 * save properties to file "config.properties"
 	 */
-	private void setProp() {
+	private void saveProp() {
 		// set the properties value
 		Properties prop = new Properties();
-		for (int i = 0; i < arrMoney.length; i++) {
-			prop.setProperty(arrNameMoney[i],
-					new Integer(arrMoney[i]).toString());
-		}
+		fillProp(prop);
 
+		flushPropToFile(prop);
+	}
+
+	/**
+	 * @param prop
+	 */
+	private void flushPropToFile(Properties prop) {
 		try (OutputStream output = new FileOutputStream("config.properties")) {
 
 			// save properties to project root folder
 
 			prop.store(output, null);
-			prop.list(System.out);
+			
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @param prop
+	 */
+	private void fillProp(Properties prop) {
+		for (int i = 0; i < arrMoney.length; i++) {
+			prop.setProperty(arrNameMoney[i],
+					new Integer(arrMoney[i]).toString());
 		}
 	}
 	/**
@@ -138,7 +229,7 @@ public class CoinsMashine {
 		int totalSum1 = 0;
 		int totalSum2 = 0;
 		for (int i = 0; i < constMoney.length; i++) {
-			if (i < constMoney.length - 6)
+			if (i < constMoney.length - beginOfMonets)
 				totalSum1 += (constMoney[i] * arrMoney[i]);
 			else {
 				totalSum2 += (constMoney[i] * arrMoney[i]);
@@ -152,12 +243,10 @@ public class CoinsMashine {
 	 * @param d - 
 	 */
 	public void calculateSum(double d) {
-
-		// get the property value and print it out
-		getProp();
+		
 
 		for (int i = 0; i < arrMoney.length; i++) {
-			if (i == arrMoney.length - 6)
+			if (i == arrMoney.length - beginOfMonets)
 				d *= 100;
 			if(arrMoney[i] != 0)
 			while (d - constMoney[i] > 0) {
@@ -169,7 +258,7 @@ public class CoinsMashine {
 
 			}
 		}
-		setProp();
+		saveProp();
 	}
 
 }
