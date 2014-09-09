@@ -48,7 +48,7 @@ public class CoinsMashine {
 				num = scanner.nextDouble();
 			} catch (InputMismatchException ime) {
 				ext = false;
-				break;
+				continue;
 			}
 			System.out.println(num);
 
@@ -61,7 +61,7 @@ public class CoinsMashine {
 
 		}
 		scanner.close();
-
+		System.out.println("Exited");
 	}
 
 	/**
@@ -159,9 +159,10 @@ public class CoinsMashine {
 		for (int i = 0; i < arrMoney.length; i++) {
 			if (i == arrMoney.length - 6)
 				d *= 100;
+			if(arrMoney[i] != 0)
 			while (d - constMoney[i] > 0) {
 				if (arrMoney[i] == 0)
-					continue;
+					break;
 				d -= constMoney[i];
 				arrMoney[i]--;
 				arrMoneyOut[i]++;
