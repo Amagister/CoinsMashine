@@ -18,7 +18,12 @@ public class CoinsMashine {
 
 	private final int BEGINOFMONETSUAH = 6;
 	private final int BEGINOFMONETS$ = 5;
+	private final int BEGINOFCOINSUAH = 0;
+	private final int BEGINOFCOINSEUR = 0;
+	private final int BEGINOFCOINS$$$ = 2;
 	private int beginOfMonets = 0;
+	private int beginOfCoins = 0;
+
 	
 	// an array of the number of coins of each denomination
 	private int[] arrMoney = { 2, 3, 7, 15, 24, 38, 84, 29, 33, 22, 74, 91, 32,
@@ -45,7 +50,7 @@ public class CoinsMashine {
 			"EUR 0.01" };
 	private final String[] arrNameMoney$$$ = { "$500", "$200", "$100",
 			"$50", "$20", "$10", "$5", "$2", "$1",
-			"$0.50", "$0.25", "$0.10", "$0.05", "$0.01" };
+			"$0.50", "$0.20", "$0.10", "$0.05", "$0.01" };
 	public CoinsMashine() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -64,7 +69,7 @@ public class CoinsMashine {
 			cm.clear();
 			
 			System.out.println("Type the sum UAH or EURO in format: XXX,xx ZZZ");
-			System.out.println("sample: 123,54 UAH  or 123,54 EUR");
+			System.out.println("sample: 123,54 UAH  or 123,54 EUR or 123,54 $");
 			System.out.println("for quit press any symbol and press Enter");
 			// input sum for calculate
 			try {
@@ -103,21 +108,22 @@ public class CoinsMashine {
 			arrNameMoney = arrNameMoneyUAH;
 			constMoney = constMoneyUAH;
 			beginOfMonets = BEGINOFMONETSUAH;
+			beginOfCoins = BEGINOFCOINSUAH;
 			return true;
 
 		case "EUR":
 			arrNameMoney = arrNameMoneyEUR;
 			constMoney = constMoneyEUR;
 			beginOfMonets = BEGINOFMONETSUAH;
+			beginOfCoins = BEGINOFCOINSEUR;
 			return true;
 			
 		case "$":
 			arrNameMoney = arrNameMoney$$$;
 			constMoney = constMoney$$$;
 			beginOfMonets = BEGINOFMONETS$;
+			beginOfCoins = BEGINOFCOINS$$$;
 			return true;
-
-
 		default:
 			System.out.println("Error' type currency");
 			return false;
@@ -136,7 +142,7 @@ public class CoinsMashine {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < arrMoney.length; i++) {
+		for (int i = beginOfCoins; i < constMoney.length; i++) {
 			if (arrMoneyOut[i] != 0) {
 				sb.append(arrNameMoney[i] + "=" + arrMoneyOut[i] + ", ");
 			}
@@ -158,7 +164,7 @@ public class CoinsMashine {
 			fillProp(prop);
 		flushPropToFile(prop);
 		
-		prop.list(System.out);
+//		prop.list(System.out);
 		
 	}
 	/**
@@ -168,7 +174,7 @@ public class CoinsMashine {
 		// set the properties value
 		Properties prop = new Properties();
 		fillProp(prop);
-
+//		prop.list(System.out);
 		flushPropToFile(prop);
 	}
 
@@ -193,7 +199,19 @@ public class CoinsMashine {
 	 * @param prop
 	 */
 	private void fillProp(Properties prop) {
-		for (int i = 0; i < arrMoney.length; i++) {
+		selectStrategy("UAH");		
+		saveCurrencyProp(prop);
+		selectStrategy("EUR");		
+		saveCurrencyProp(prop);
+		selectStrategy("$");		
+		saveCurrencyProp(prop);
+	}
+
+	/**
+	 * @param prop
+	 */
+	private void saveCurrencyProp(Properties prop) {
+		for (int i = beginOfCoins; i < constMoney.length; i++) {
 			prop.setProperty(arrNameMoney[i],
 					new Integer(arrMoney[i]).toString());
 		}
@@ -207,16 +225,27 @@ public class CoinsMashine {
 		try (InputStream input = new FileInputStream("config.properties")) {
 			// load a properties file
 			prop.load(input);
-			// prop.list(System.out);
-
-			for (int i = 0; i < arrMoney.length; i++) {
-				arrMoney[i] = Integer.parseInt(prop
-						.getProperty(arrNameMoney[i]));
-			}
+//			 prop.list(System.out);
+			selectStrategy("UAH");
+			loadCurrencyProp(prop);
+			selectStrategy("EUR");
+			loadCurrencyProp(prop);
+			selectStrategy("$");
+			loadCurrencyProp(prop);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @param prop
+	 */
+	private void loadCurrencyProp(Properties prop) {
+		for (int i = beginOfCoins; i < constMoney.length; i++) {
+			arrMoney[i] = Integer.parseInt(prop
+					.getProperty(arrNameMoney[i]));
 		}
 	}
 
@@ -228,7 +257,7 @@ public class CoinsMashine {
 	boolean checkSum(double sum) {
 		int totalSum1 = 0;
 		int totalSum2 = 0;
-		for (int i = 0; i < constMoney.length; i++) {
+		for (int i = beginOfCoins; i < constMoney.length; i++) {
 			if (i < constMoney.length - beginOfMonets)
 				totalSum1 += (constMoney[i] * arrMoney[i]);
 			else {
@@ -245,11 +274,11 @@ public class CoinsMashine {
 	public void calculateSum(double d) {
 		
 
-		for (int i = 0; i < arrMoney.length; i++) {
-			if (i == arrMoney.length - beginOfMonets)
-				d *= 100;
+		for (int i = beginOfCoins; i < constMoney.length; i++) {
+			if (i == constMoney.length - beginOfMonets)
+				d = (d+0.005)*100;
 			if(arrMoney[i] != 0)
-			while (d - constMoney[i] > 0) {
+			while (d - constMoney[i] >= 0) {
 				if (arrMoney[i] == 0)
 					break;
 				d -= constMoney[i];

@@ -55,6 +55,7 @@ public class AppTest
     	assertFalse(cm.selectStrategy("EU"));
     	assertTrue(cm.selectStrategy("UAH"));
     	assertTrue(cm.selectStrategy("$"));
+
     	
     }
     
